@@ -16,8 +16,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
     ));
 
-// Add this line — tells app to listen on port 9000 inside Docker
-builder.WebHost.UseUrls("http://0.0.0.0:9000");
+
 // --- JWT Authentication ---
 var jwtKey = builder.Configuration["Jwt:Key"]!;
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -86,7 +85,7 @@ builder.Services.AddControllers();
 var app = builder.Build();
 
 // --- Middleware Pipeline ---
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -105,5 +104,5 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
 }
-// app.Urls.Add("http://0.0.0.0:8080");
+
 app.Run();
