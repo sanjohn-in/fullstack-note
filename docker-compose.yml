@@ -5,10 +5,10 @@ services:
     container_name: notesapp_mysql
     restart: always
     environment:
+      MYSQL_DATABASE: techbodia     
+      MYSQL_USER: techbodia         
+      MYSQL_PASSWORD: Techbodia@2026
       MYSQL_ROOT_PASSWORD: rootpassword123
-      MYSQL_DATABASE: NotesAppDb
-      MYSQL_USER: notesuser
-      MYSQL_PASSWORD: notespassword123
     ports:
       - "3307:3306"
     volumes:
@@ -23,16 +23,14 @@ services:
     container_name: notesapp_backend
     ports:
       - "5174:8080"
-    depends_on:
-      mysql:
-        condition: service_healthy
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__DefaultConnection=Server=mysql;Port=3306;Database=NotesAppDb;User=notesuser;Password=notespassword123;
-      - Jwt__Key=THIS_IS_A_SUPER_SECRET_KEY_12345
-      - Jwt__Issuer=BackendApi
-      - Jwt__Audience=BackendApiUser
-      - Jwt__ExpireMinutes=60
+    # depends_on:
+    #   mysql:
+    #     condition: service_healthy
+    # environment:
+    #   - ConnectionStrings__DefaultConnection=Server=mysql;Port=3306;Database=techbodia;User=techbodia;Password=Techbodia@2026;
+    #   - Jwt__Key=THIS_IS_A_SUPER_SECRET_KEY_12345
+    #   - Jwt__Issuer=BackendApi
+    #   - Jwt__Audience=BackendApiUser
     restart: always
 
   frontend:
