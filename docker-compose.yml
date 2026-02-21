@@ -1,34 +1,18 @@
-# version: "3.9"
-
 services:
-  # mysql:
-  #   image: mysql:8
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-  #     MYSQL_DATABASE: ${DB_DATABASE}
-  #   ports:
-  #     - "3306:3306"
-  #   volumes:
-  #     - mysql_data:/var/lib/mysql
-  #   restart: always
+
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: Techbodia@2026
+      MYSQL_DATABASE: techbodia
+    ports:
+      - "3307:3306"
+    restart: always
 
   backend:
-    build: ./Backend
+    build: ./backend
     ports:
       - "5239:9000"
-    # env_file:
-    #   - .env
-    # depends_on:
-    #   - mysql
-    restart: always
-
-  frontend:
-    build: ./Frontend
-    ports:
-      - "5173:5173"
     depends_on:
-      - backend
+      - mysql
     restart: always
-
-volumes:
-  mysql_data:
