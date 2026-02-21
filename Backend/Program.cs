@@ -93,7 +93,6 @@ app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-DotNetEnv.Env.Load();
 
 
 // --- Auto-run migrations on startup ---
