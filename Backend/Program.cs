@@ -11,9 +11,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // --- Database ---
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
-    // For SQLite: options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+    ));
 
+// Add this line — tells app to listen on port 9000 inside Docker
+builder.WebHost.UseUrls("http://0.0.0.0:9000");
 // --- JWT Authentication ---
 var jwtKey = builder.Configuration["Jwt:Key"]!;
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
