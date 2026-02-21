@@ -1,14 +1,15 @@
 services:
 
-  # mysql:
-  #   image: mysql:8
-  #   command: --default-authentication-plugin=mysql_native_password
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: Techbodia@2026
-  #     MYSQL_DATABASE: techbodia
-  #   ports:
-  #     - "3307:3306"
-  #   restart: always
+  mysql:
+    image: mysql:8
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: Techbodia@2026
+      MYSQL_DATABASE: techbodia
+    ports:
+      - "3307:3306"
+    restart: always
+
 
   backend:
     build: ./Backend
