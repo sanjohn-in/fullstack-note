@@ -32,9 +32,9 @@ services:
       - Jwt__Issuer=BackendApi
       - Jwt__Audience=BackendApiUser
       - Jwt__ExpireMinutes=60
-      - ASPNETCORE_ENVIRONMENT=Production
-    extra_hosts:
-      - "host.docker.internal:host-gateway" 
+    #   - ASPNETCORE_ENVIRONMENT=Production
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway" 
     restart: always
 
   frontend:
