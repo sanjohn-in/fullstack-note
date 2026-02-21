@@ -1,0 +1,15 @@
+# ===== FRONTEND (Vue) =====
+Frontend/node_modules/
+Frontend/dist/
+
+# ===== BACKEND (ASP.NET Core) =====
+Backend/bin/
+Backend/obj/
+
+# ===== ENV / SECRETS =====
+.env
+appsettings.Production.json
+
+# ===== OS =====
+.DS_Store
+Thumbs.db

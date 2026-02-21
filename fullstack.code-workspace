@@ -1,0 +1,21 @@
+{
+	"folders": [{ "path": "Backend" }, { "path": "Frontend" }],
+	"settings": {
+		"editor.formatOnSave": true,
+
+		"[vue]": {
+			"editor.defaultFormatter": "esbenp.prettier-vscode",
+		},
+		"[javascript]": {
+			"editor.defaultFormatter": "esbenp.prettier-vscode",
+		},
+		"[json]": {
+			"editor.defaultFormatter": "esbenp.prettier-vscode",
+		},
+
+		"[csharp]": {
+			"editor.defaultFormatter": "ms-dotnettools.csharp",
+		},
+		"omnisharp.enableDecompilationSupport": true,
+	},
+}
