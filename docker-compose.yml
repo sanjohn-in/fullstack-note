@@ -16,8 +16,8 @@ services:
     build: ./backend
     ports:
       - "8000:8080"
-    env_file:
-      - .env
+    # env_file:
+    #   - .env
     # depends_on:
     #   - mysql
     restart: always
