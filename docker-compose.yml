@@ -22,7 +22,7 @@ services:
     build: ./Backend
     container_name: notesapp_backend
     ports:
-      - "5174:9000"
+      - "5174:8080"
     depends_on:
       mysql:
         condition: service_healthy
