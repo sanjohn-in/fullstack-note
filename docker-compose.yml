@@ -8,6 +8,11 @@ services:
       MYSQL_DATABASE: techbodia
     ports:
       - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     restart: always
 
 
@@ -15,8 +20,11 @@ services:
     build: ./Backend
     ports:
       - "5174:9000"
-    # depends_on:
-    #   - mysql
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:9000
     restart: always
 
   frontend:
