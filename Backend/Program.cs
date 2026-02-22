@@ -11,11 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // --- Database ---
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
-    ));
-
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+    )
+);
 
 // --- JWT Authentication ---
 var jwtKey = builder.Configuration["Jwt:Key"]!;

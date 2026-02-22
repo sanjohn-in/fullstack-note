@@ -1,46 +1,46 @@
 services:
 
-  mysql:
-    image: mysql:8.0
-    container_name: notesapp_mysql
+  sqlserver:
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    container_name: notesapp_sqlserver
     restart: always
     environment:
-      MYSQL_DATABASE: techbodia     
-      MYSQL_USER: techbodia         
-      MYSQL_PASSWORD: Techbodia@2026
-      MYSQL_ROOT_PASSWORD: rootpassword123
+      ACCEPT_EULA: "1"
+      MSSQL_SA_PASSWORD: "Techbodia@2026"
+      MSSQL_PID: "Developer"
     ports:
-      - "3307:3306"
+      - "1433:1433"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - sqlserver_data:/var/opt/mssql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 20s
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "SA", "-P", "Techbodia@2026", "-Q", "SELECT 1"]
+      timeout: 30s
       retries: 10
+      interval: 10s
 
-  backend:
-    build: ./Backend
-    container_name: notesapp_backend
-    ports:
-      - "5174:8080"
-    depends_on:
-      mysql:
-        condition: service_healthy
-    environment:
-      - ConnectionStrings__DefaultConnection=Server=mysql;Port=3306;Database=techbodia;User=techbodia;Password=Techbodia@2026;
-      - Jwt__Key=THIS_IS_A_SUPER_SECRET_KEY_12345
-      - Jwt__Issuer=BackendApi
-      - Jwt__Audience=BackendApiUser
-    restart: always
+  # backend:
+  #   build: ./Backend
+  #   container_name: notesapp_backend
+  #   ports:
+  #     - "5174:8080"
+  #   depends_on:
+  #     sqlserver:
+  #       condition: service_healthy
+  #   environment:
+  #     - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=techbodia;User Id=sa;Password=Techbodia@2026;TrustServerCertificate=True;
+  #     - Jwt__Key=THIS_IS_A_SUPER_SECRET_KEY_12345
+  #     - Jwt__Issuer=BackendApi
+  #     - Jwt__Audience=BackendApiUser
+  #   restart: always
 
-  frontend:
-    build: ./Frontend
-    container_name: notesapp_frontend
-    ports:
-      - "5173:5173"
-    depends_on:
-      - backend
-    restart: always
+  # frontend:
+  #   build: ./Frontend
+  #   container_name: notesapp_frontend
+  #   ports:
+  #     - "5173:5173"
+  #   depends_on:
+  #     - backend
+  #   restart: always
 
 volumes:
-  mysql_data:
+  sqlserver_data:
