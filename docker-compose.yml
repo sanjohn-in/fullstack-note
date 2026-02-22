@@ -18,29 +18,29 @@ services:
       retries: 10
       interval: 10s
 
-  # backend:
-  #   build: ./Backend
-  #   container_name: notesapp_backend
-  #   ports:
-  #     - "5174:8080"
-  #   depends_on:
-  #     sqlserver:
-  #       condition: service_healthy
-  #   environment:
-  #     - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=techbodia;User Id=sa;Password=Techbodia@2026;TrustServerCertificate=True;
-  #     - Jwt__Key=THIS_IS_A_SUPER_SECRET_KEY_12345
-  #     - Jwt__Issuer=BackendApi
-  #     - Jwt__Audience=BackendApiUser
-  #   restart: always
+  backend:
+    build: ./Backend
+    container_name: notesapp_backend
+    ports:
+      - "5174:8080"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=techbodia;User Id=sa;Password=Techbodia@2026;TrustServerCertificate=True;
+      - Jwt__Key=THIS_IS_A_SUPER_SECRET_KEY_12345
+      - Jwt__Issuer=BackendApi
+      - Jwt__Audience=BackendApiUser
+    restart: always
 
-  # frontend:
-  #   build: ./Frontend
-  #   container_name: notesapp_frontend
-  #   ports:
-  #     - "5173:5173"
-  #   depends_on:
-  #     - backend
-  #   restart: always
+  frontend:
+    build: ./Frontend
+    container_name: notesapp_frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    restart: always
 
 volumes:
   sqlserver_data:
