@@ -83,6 +83,30 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
+// --- Run migrations with retry FIRST (before middleware) ---
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    var retries = 15;
+    while (retries > 0)
+    {
+        try
+        {
+            Console.WriteLine("Attempting database connection...");
+            db.Database.Migrate();
+            Console.WriteLine("Database ready!");
+            break;
+        }
+        catch (Exception ex)
+        {
+            retries--;
+            Console.WriteLine($"DB not ready, retrying in 10s... ({retries} left). {ex.Message}");
+            Thread.Sleep(10000);
+        }
+    }
+}
+
 // --- Middleware Pipeline ---
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
@@ -95,13 +119,4 @@ app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-
-
-// --- Auto-run migrations on startup ---
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
-}
-
 app.Run(); 
