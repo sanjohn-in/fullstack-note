@@ -2,6 +2,7 @@ services:
 
   sqlserver:
     image: mcr.microsoft.com/azure-sql-edge:latest
+    platform: linux/arm64      # ← add this line
     container_name: notesapp_sqlserver
     restart: always
     environment:

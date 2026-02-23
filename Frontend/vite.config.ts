@@ -1,7 +1,51 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import tailwindcss from '@tailwindcss/vite';
+import vue from '@vitejs/plugin-vue';
+import { fileURLToPath, URL } from 'node:url';
 
+import AutoImport from 'unplugin-auto-import/vite';
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
+import Components from 'unplugin-vue-components/vite';
+import { defineConfig, loadEnv, type ConfigEnv } from "vite";
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [vue()],
+const viteConfig = defineConfig((mode: ConfigEnv) => {
+  const env = loadEnv(mode.mode, process.cwd());
+  let isProduction = false;
+  if (mode.mode === 'server') {
+    isProduction = true;
+  }
+  return {
+    plugins:
+      [
+        vue(),
+        tailwindcss(),
+        AutoImport({
+          resolvers: [ElementPlusResolver()],
+        }),
+        Components({
+          resolvers: [ElementPlusResolver()],
+        }),
+      ],
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url))
+      }
+    },
+    server: {
+      host: "0.0.0.0",
+      port: env.VITE_PORT as unknown as number,
+      open: false,
+      hmr: true,
+      proxy: {
+        "/api": {
+          target: isProduction ? env.VITE_API_PROD : env.VITE_API_LOCAL,
+          ws: true,
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, ""),
+        },
+
+      },
+      allowedHosts: true,
+    },
+  }
 })
+export default viteConfig;
