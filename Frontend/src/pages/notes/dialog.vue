@@ -52,6 +52,7 @@
 import { createNote } from "@/services/note";
 import { Check } from "@element-plus/icons-vue";
 import type { FormInstance, FormRules } from "element-plus";
+import { ElMessage } from "element-plus";
 import { reactive, ref } from "vue";
 
 const state = reactive({
