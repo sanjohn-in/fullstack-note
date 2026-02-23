@@ -61,7 +61,7 @@
 					</template>
 				</el-table-column>
 
-				<el-table-column :label="'operate'" show-overflow-tooltip width="220">
+				<el-table-column label="Operate" show-overflow-tooltip width="220">
 					<template #default="scope">
 						<el-button
 							size="small"
@@ -112,6 +112,7 @@
 </template>
 <script lang="ts" setup>
 import { deleteNote, getNote, getNotes } from "@/services/note";
+import dayjs from "dayjs";
 import { ElMessageBox } from "element-plus";
 import { defineAsyncComponent, onMounted, reactive, ref } from "vue";
 
@@ -175,7 +176,13 @@ const getTableData = async () => {
 	try {
 		const response = await getNotes(state.tableData.page);
 		const data = response.data ?? [];
-		state.tableData.data = data;
+		state.tableData.data = data.map((item: EmptyObjectType) => {
+			return {
+				...item,
+				createdAt: dayjs(item.createdAt).format("DD/MM/YYYY HH:mm A"),
+				updatedAt: dayjs(item.updatedAt).format("DD/MM/YYYY HH:mm A"),
+			};
+		});
 		state.tableData.total = response.total;
 	} catch (e) {
 		console.log(e);

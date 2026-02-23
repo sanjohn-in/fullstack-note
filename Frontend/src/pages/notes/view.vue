@@ -17,10 +17,10 @@
 						<div style="white-space: pre-wrap">{{ state.note.content }}</div>
 					</el-descriptions-item>
 					<el-descriptions-item label="Created At">
-						{{ state.note.createdAt }}
+						{{ dayjs(state.note.createdAt).format("DD/MM/YYYY HH:mm A") }}
 					</el-descriptions-item>
 					<el-descriptions-item label="Updated At">
-						{{ state.note.updatedAt }}
+						{{ dayjs(state.note.updatedAt).format("DD/MM/YYYY HH:mm A") }}
 					</el-descriptions-item>
 				</el-descriptions>
 			</template>
@@ -36,6 +36,7 @@
 </template>
 
 <script setup lang="ts">
+import dayjs from "dayjs";
 import { reactive } from "vue";
 
 const state = reactive({
