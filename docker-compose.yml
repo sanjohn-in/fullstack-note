@@ -2,7 +2,7 @@ services:
 
   sqlserver:
     image: mcr.microsoft.com/azure-sql-edge:latest
-    platform: linux/arm64      # ← add this line
+    platform: linux/arm64
     container_name: notesapp_sqlserver
     restart: always
     environment:
@@ -14,11 +14,12 @@ services:
     volumes:
       - sqlserver_data:/var/opt/mssql
     healthcheck:
-      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "SA", "-P", "Techbodia@2026", "-Q", "SELECT 1"]
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Techbodia@2026 -Q 'SELECT 1' || exit 1"]
+      start_period: 60s    # ← wait 60s before first check
+      interval: 15s
       timeout: 30s
-      retries: 10
-      interval: 10s
-
+      retries: 15          # ← more retries
+ 
   backend:
     build: ./Backend
     container_name: notesapp_backend
