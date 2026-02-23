@@ -44,14 +44,7 @@ builder.Services.AddScoped<INotesService, NotesService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
-        policy
-            .WithOrigins(
-                "http://154.26.134.34:5173",   // ← VPS frontend
-                "http://localhost:5173"          // ← local dev
-            )
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials());              // ← needed since you use withCredentials: true
+        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 });
 
 // --- Swagger with JWT support ---
