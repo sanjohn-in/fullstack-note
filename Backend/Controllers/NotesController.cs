@@ -1,14 +1,13 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Backend.DTOs.Notes;
 using Backend.Services;
+using System.Security.Claims;
 
 namespace Backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]   // All notes endpoints require a valid JWT
     public class NotesController : ControllerBase
     {
         private readonly INotesService _notesService;
@@ -21,16 +20,23 @@ namespace Backend.Controllers
         }
 
         // Helper to get the current user's ID from JWT claims
-        private int GetUserId() =>
-            int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
+        private int GetUserId()
+        {
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(id)) return 1;
+            return int.Parse(id);
+        }
         // GET api/notes
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [HttpGet]
+        public async Task<IActionResult> GetAll(
+            [FromQuery] string? search,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
+            
         {
-            var notes = await _notesService.GetAllAsync(GetUserId());
-            _logger.LogInformation("Retrieved all notes for user ID: {UserId}", GetUserId());
-            return Ok(notes);
+            var result = await _notesService.GetAllAsync(GetUserId(), search, page, pageSize);
+            return Ok(result);
         }
 
         // GET api/notes/5

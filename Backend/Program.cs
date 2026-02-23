@@ -1,3 +1,4 @@
+using System.Security.Claims;  // ADD THIS
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -42,7 +43,24 @@ builder.Services.AddAuthentication(options =>
             Encoding.UTF8.GetBytes(jwtKey)
         ),
 
-        ClockSkew = TimeSpan.Zero // optional, but recommended
+        ClockSkew = TimeSpan.Zero
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            Console.WriteLine($"❌ JWT FAILED: {context.Exception.Message}");
+            return Task.CompletedTask;
+        },
+        OnTokenValidated = context =>
+        {
+            var userId = context.Principal?
+                .FindFirstValue(ClaimTypes.NameIdentifier);
+
+            Console.WriteLine($"✅ JWT SUCCESS - userId: {userId}");
+            return Task.CompletedTask;
+        }
     };
 });
 
@@ -61,6 +79,7 @@ builder.Services.AddCors(options =>
             .WithOrigins(
                 "http://154.26.134.34:5173",
                 "http://localhost:5173"
+
             )
             .AllowAnyHeader()
             .AllowAnyMethod()

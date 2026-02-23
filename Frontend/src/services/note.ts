@@ -1,7 +1,11 @@
 import requst from "@/utils/request";
 
-export function getNotes(param: object): Promise<EmptyObjectType> {
-    return requst.get("/Notes", param);
+export function getNotes(params: object): Promise<EmptyObjectType> {
+    return requst({
+        url: "/Notes",
+        method: 'get',
+        params,
+    });
 }
 export function createNote(param: object): Promise<EmptyObjectType> {
     return requst.post("/Notes", param);

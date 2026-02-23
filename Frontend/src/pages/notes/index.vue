@@ -35,6 +35,7 @@
 				v-loading.lock="state.tableData.config.loading"
 				style="width: 100%"
 				row-key="id"
+				:default-sort="{ prop: 'createdAt', order: 'descending' }"
 			>
 				<el-table-column type="index" label="No" width="100px" />
 				<el-table-column
@@ -45,6 +46,7 @@
 					:width="item.width"
 					:show-overflow-tooltip="true"
 					:resizable="true"
+					sortable
 				>
 					<template #default="scope">
 						<el-tag
@@ -59,7 +61,7 @@
 					</template>
 				</el-table-column>
 
-				<el-table-column :label="'operate'" show-overflow-tooltip width="150">
+				<el-table-column :label="'operate'" show-overflow-tooltip width="220">
 					<template #default="scope">
 						<el-button
 							size="small"
@@ -105,35 +107,38 @@
 			:data="state.tableData.data"
 			@refresh="getTableData()"
 		/>
+		<View ref="openViewRef" />
 	</div>
 </template>
 <script lang="ts" setup>
+import { deleteNote, getNote, getNotes } from "@/services/note";
 import { ElMessageBox } from "element-plus";
 import { defineAsyncComponent, onMounted, reactive, ref } from "vue";
 
+const View = defineAsyncComponent(() => import("./view.vue"));
 const Dialog = defineAsyncComponent(() => import("./dialog.vue"));
 const state = reactive({
 	// Header content (required, pay attention to the format)
 	tableData: {
 		header: [
 			{
-				key: "Title",
+				key: "title",
 				title: "Title",
-				width: 280,
+
 				type: "text",
 				isCheck: true,
 			},
 
 			{
 				title: "Created At",
-				key: "CreatedAt",
+				key: "createdAt",
 				width: 180,
 				type: "date",
 				isCheck: true,
 			},
 			{
 				title: "Updated At",
-				key: "UpdatedAt",
+				key: "updatedAt",
 				width: 180,
 				type: "date",
 				isCheck: true,
@@ -168,40 +173,24 @@ const openDialogRef = ref();
 const getTableData = async () => {
 	state.tableData.config.loading = true;
 	try {
-		// const response = await api.getCategory(state.tableData.page);
-		// const data = response.data ?? [];
-		// const sortTree = (nodes: ICategory[]): ICategory[] => {
-		// 	if (!nodes || !nodes.length) return [];
-		// 	nodes.sort((a, b) => a.sort - b.sort);
-		// 	nodes.forEach((node: EmptyObjectType) => {
-		// 		if (node.children && node.children.length > 0) {
-		// 			node.children = sortTree(node.children);
-		// 		}
-		// 	});
-		// 	return nodes;
-		// };
-		// state.tableData.data = sortTree(data);
-		// state.tableData.total = response.meta.total;
+		const response = await getNotes(state.tableData.page);
+		const data = response.data ?? [];
+		state.tableData.data = data;
+		state.tableData.total = response.total;
 	} catch (e) {
 		console.log(e);
 	} finally {
 		state.tableData.config.loading = false;
 	}
 };
-const deleteRow = async (row: Object) => {
-	console.log("Deleting row:", row);
-	try {
-		getTableData();
-	} catch (e) {
-		console.log(e);
-	} finally {
-		state.tableData.config.loading = false;
-	}
-};
-const onSystem = (row: object, key: string) => {
-	if (key === "edit") {
-		// onOpenEditDialog(key, row);
-	} else {
+const openViewRef = ref();
+const onSystem = async (row: Record<string, number>, key: string) => {
+	if (key === "view") {
+		const res = await getNote(Number(row?.id));
+		openViewRef.value?.openDialog(res);
+	} else if (key === "edit") {
+		openDialogRef.value?.openDialog(key, row);
+	} else if (key === "delete") {
 		onRowDel(row);
 	}
 };
@@ -222,7 +211,8 @@ const onRowDel = (row: EmptyObjectType) => {
 		type: "warning",
 	})
 		.then(async () => {
-			await deleteRow(row);
+			await deleteNote(row.id);
+			getTableData();
 		})
 		.catch(() => {});
 };

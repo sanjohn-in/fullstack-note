@@ -5,7 +5,9 @@
 			:title="state.dialog.title"
 			destroy-on-close
 			@close="resetFields"
+			width="550px"
 		>
+			<template #title>{{ state.dialog.title }}</template>
 			<template #default>
 				<el-form
 					class="p-5"
@@ -18,15 +20,15 @@
 					<el-row :gutter="20">
 						<!-- Title -->
 						<el-col :xs="24" :md="24">
-							<el-form-item prop="Title" label="Title">
-								<el-input v-model="state.form.Title" type="text" />
+							<el-form-item prop="title" label="title">
+								<el-input v-model="state.form.title" type="text" />
 							</el-form-item>
 						</el-col>
 
 						<!-- Content -->
 						<el-col :xs="24" :md="24">
-							<el-form-item prop="Content" label="Content">
-								<el-input v-model="state.form.Content" type="textarea" />
+							<el-form-item prop="content" label="content">
+								<el-input v-model="state.form.content" type="textarea" />
 							</el-form-item>
 						</el-col>
 					</el-row>
@@ -49,7 +51,7 @@
 	</div>
 </template>
 <script setup lang="ts">
-import { createNote } from "@/services/note";
+import { createNote, updateNote } from "@/services/note";
 import { Check } from "@element-plus/icons-vue";
 import type { FormInstance, FormRules } from "element-plus";
 import { ElMessage } from "element-plus";
@@ -58,8 +60,8 @@ import { reactive, ref } from "vue";
 const state = reactive({
 	form: {
 		id: null,
-		Title: "",
-		Content: "",
+		title: "",
+		content: "",
 	},
 	dialog: {
 		title: "",
@@ -73,11 +75,11 @@ const state = reactive({
 const formRef = ref<FormInstance>();
 
 const rules: FormRules = {
-	Title: [
+	title: [
 		{ required: true, message: "Title is required", trigger: "blur" },
 		{ min: 3, message: "At least 3 characters", trigger: "blur" },
 	],
-	Content: [
+	content: [
 		{ required: true, message: "Content is required", trigger: "blur" },
 		{ min: 10, message: "At least 10 characters", trigger: "blur" },
 	],
@@ -87,15 +89,16 @@ const emit = defineEmits(["refresh"]);
 const resetFields = () => {
 	state.form = {
 		id: null,
-		Title: "",
-		Content: "",
+		title: "",
+		content: "",
 	};
 };
 
 const openDialog = async (type: string, row: object) => {
 	state.dialog.type = type;
+	state.dialog.title = type === "add" ? "Add Note" : "Edit Note";
 	state.dialog.isShowDialog = true;
-	console.log(row);
+	state.form = JSON.parse(JSON.stringify(row));
 };
 const submitProcess = async () => {
 	await formRef.value?.validate(async (valid) => {
@@ -104,15 +107,17 @@ const submitProcess = async () => {
 			state.loading = true;
 			const request = {
 				id: state.form.id,
-				Title: state.form.Title,
-				Content: state.form.Content,
+				title: state.form.title,
+				content: state.form.content,
 			};
-			const response = await createNote(request);
+			const response = state.form.id
+				? await updateNote(state.form.id, request)
+				: await createNote(request);
 			state.dialog.isShowDialog = false;
 			resetFields();
 			ElMessage.success("Note saved successfully");
 			console.log(response);
-			emit("refresh", request);
+			emit("refresh");
 		} catch (e) {
 			ElMessage.error("Failed to save note");
 			console.log(e);

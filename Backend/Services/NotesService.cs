@@ -14,15 +14,32 @@ namespace Backend.Services
             _db = db;
         }
 
-        public async Task<IEnumerable<NoteResponseDto>> GetAllAsync(int userId)
+        public async Task<object> GetAllAsync(int userId, string? search, int page, int pageSize)
         {
-            return await _db.Notes
-                .Where(n => n.UserId == userId)
+            var query = _db.Notes
+                .Where(n => n.UserId == userId);
+
+            if (!string.IsNullOrWhiteSpace(search))
+                query = query.Where(n => n.Title.Contains(search) || n.Content.Contains(search));
+
+            var total = await query.CountAsync();
+
+            var notes = await query
                 .OrderByDescending(n => n.UpdatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(n => ToDto(n))
                 .ToListAsync();
-        }
 
+            return new
+            {
+                data = notes,
+                total,
+                page,
+                pageSize,
+                totalPages = (int)Math.Ceiling((double)total / pageSize)
+            };
+        }
         public async Task<NoteResponseDto> GetByIdAsync(int noteId, int userId)
         {
             var note = await _db.Notes
