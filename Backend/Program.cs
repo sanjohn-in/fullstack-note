@@ -9,65 +9,83 @@ using Backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- Database ---
+// ================= DATABASE =================
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")
     )
 );
 
-// --- JWT Authentication ---
+// ================= JWT AUTH =================
 var jwtKey = builder.Configuration["Jwt:Key"]!;
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+var jwtAudience = builder.Configuration["Jwt:Audience"];
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
-        };
-    });
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+
+        ValidIssuer = jwtIssuer,
+        ValidAudience = jwtAudience,
+
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwtKey)
+        ),
+
+        ClockSkew = TimeSpan.Zero // optional, but recommended
+    };
+});
 
 builder.Services.AddAuthorization();
 
-// --- Dependency Injection ---
+// ================= DI =================
 builder.Services.AddScoped<JwtHelper>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<INotesService, NotesService>();
 
-// --- CORS (for future frontend) ---
+// ================= CORS =================
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
         policy
             .WithOrigins(
-                "http://154.26.134.34:5173",   // ← VPS frontend
-                "http://localhost:5173"          // ← local dev
+                "http://154.26.134.34:5173",
+                "http://localhost:5173"
             )
-            .AllowAnyMethod()
             .AllowAnyHeader()
-            .AllowCredentials());              // ← needed since you use withCredentials: true
+            .AllowAnyMethod()
+            .AllowCredentials()
+    );
 });
 
-// --- Swagger with JWT support ---
+// ================= SWAGGER =================
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Notes API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Notes API",
+        Version = "v1"
+    });
 
-    // Add JWT auth button in Swagger UI
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "Enter: Bearer {your JWT token}",
+        Description = "Enter JWT token only (no 'Bearer ' prefix)",
         Name = "Authorization",
         In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT"
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -90,40 +108,39 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// --- Run migrations with retry FIRST (before middleware) ---
+// ================= DB MIGRATION =================
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
     var retries = 15;
-    while (retries > 0)
+    while (retries-- > 0)
     {
         try
         {
-            Console.WriteLine("Attempting database connection...");
             db.Database.Migrate();
-            Console.WriteLine("Database ready!");
             break;
         }
-        catch (Exception ex)
+        catch
         {
-            retries--;
-            Console.WriteLine($"DB not ready, retrying in 10s... ({retries} left). {ex.Message}");
-            Thread.Sleep(10000);
+            Thread.Sleep(5000);
         }
     }
 }
 
-// --- Middleware Pipeline ---
+// ================= MIDDLEWARE =================
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.MapGet("/", () => "Backend is running!");
+app.UseRouting();               // ✅ REQUIRED
 app.UseCors("AllowAll");
-app.UseAuthentication();
+app.UseAuthentication();        // ✅ BEFORE authorization
 app.UseAuthorization();
+
 app.MapControllers();
-app.Run(); 
+app.MapGet("/", () => "Backend is running!");
+
+app.Run();

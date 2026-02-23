@@ -12,10 +12,12 @@ namespace Backend.Controllers
     public class NotesController : ControllerBase
     {
         private readonly INotesService _notesService;
+        private readonly ILogger<NotesController> _logger;
 
-        public NotesController(INotesService notesService)
+        public NotesController(INotesService notesService, ILogger<NotesController> logger)
         {
             _notesService = notesService;
+            _logger = logger;
         }
 
         // Helper to get the current user's ID from JWT claims
@@ -27,6 +29,7 @@ namespace Backend.Controllers
         public async Task<IActionResult> GetAll()
         {
             var notes = await _notesService.GetAllAsync(GetUserId());
+            _logger.LogInformation("Retrieved all notes for user ID: {UserId}", GetUserId());
             return Ok(notes);
         }
 

@@ -14,3 +14,38 @@
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
+.layout-container .el-card__body {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	overflow: auto;
+}
+
+.layout-container .el-card__body .el-table {
+	flex: 1;
+}
+
+.layout-container {
+	width: 100%;
+	height: calc(100vh - 180px);
+}
+
+.layout-container .layout-flex {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+
+.layout-container .layout-main .layout-main-scroll .layout-parent {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	position: relative;
+}
+
+.layout-container .layout-padding-auto {
+	height: inherit;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}

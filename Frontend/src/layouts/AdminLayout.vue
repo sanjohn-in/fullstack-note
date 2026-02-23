@@ -13,7 +13,7 @@
 
 			<!-- Main -->
 			<el-main class="main">
-				<el-breadcrumb separator="/">
+				<el-breadcrumb separator="/" class="mb-5">
 					<el-breadcrumb-item>Home</el-breadcrumb-item>
 					<el-breadcrumb-item>{{ route.meta.title }}</el-breadcrumb-item>
 				</el-breadcrumb>
@@ -61,12 +61,13 @@ const collapsed = ref(false);
 
 .main {
 	background: #f5f7fa;
-	padding: 20px;
+	/* padding: 20px; */
 }
 
 .footer {
-	height: 40px;
+	height: 32px;
 	text-align: center;
+	margin-top: 12px;
 	font-size: 12px;
 	color: #999;
 }

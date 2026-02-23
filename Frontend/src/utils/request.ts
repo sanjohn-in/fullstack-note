@@ -16,7 +16,7 @@ service.interceptors.request.use(
   (config) => {
     // What to do before sending a request token
     if (Session.get('token')) {
-      config.headers!['Authorization'] = `${Session.get('token')}`;
+      config.headers!['Authorization'] = `Bearer ${Session.get('token')}`;
     }
     return config;
   },
@@ -32,23 +32,20 @@ service.interceptors.response.use(
     const res = response.data;
     if (res.code && res.code !== 200) {
       // `token` Expired or the account has been logged in elsewhere
-      if (res.code === -10004 || res.code === -20004) {
-        Session.clear(); // Clear all temporary browser caches
-        let msgTitle = 'Hint';
-        let msgText = 'You have been logged out, please log in again';
+      Session.clear(); // Clear all temporary browser caches
+      let msgTitle = 'Hint';
+      let msgText = 'You have been logged out, please log in again';
 
-        ElMessageBox.alert(msgText, msgTitle, {})
-          .then(() => {
-            window.location.href = '/';
-          })
-          .catch(() => { });
-      } else if (res.code === -10001) {
-        ElMessage.error(res.message);
-      }
+      ElMessageBox.alert(msgText, msgTitle, {})
+        .then(() => {
+          window.location.href = '/';
+        })
+        .catch(() => { });
       // return Promise.reject(service.interceptors.response)
       // ElMessage.error(response.error);
       return response.data;
     } else {
+      // ElMessage.error(res.message);
       return res;
     }
   },

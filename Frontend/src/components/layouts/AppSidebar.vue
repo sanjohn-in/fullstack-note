@@ -2,7 +2,7 @@
 	<el-menu
 		:collapse="collapsed"
 		router
-		background-color="#001529"
+		background-color="#f54095"
 		text-color="#fff"
 		active-text-color="#409EFF"
 		class="menu"
@@ -12,12 +12,12 @@
 			<span>Dashboard</span>
 		</el-menu-item>
 
-		<el-menu-item index="/users">
-			<el-icon><User /></el-icon>
-			<span>Users</span>
+		<el-menu-item index="/note">
+			<el-icon><Notebook /></el-icon>
+			<span>Notes</span>
 		</el-menu-item>
 
-		<el-menu-item index="/settings">
+		<el-menu-item index="/#">
 			<el-icon><Setting /></el-icon>
 			<span>Settings</span>
 		</el-menu-item>
@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { Monitor, Setting, User } from "@element-plus/icons-vue";
+import { Monitor, Setting, Notebook } from "@element-plus/icons-vue";
 
 defineProps<{
 	collapsed: boolean;

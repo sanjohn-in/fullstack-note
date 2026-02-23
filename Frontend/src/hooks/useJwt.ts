@@ -1,7 +1,8 @@
+import { Session } from "@/utils/storage"
 
-const TOKEN_KEY = 'jwtToken'
+const TOKEN_KEY = 'token'
 function appendToken(config: any) {
-    const token = localStorage.getItem(TOKEN_KEY)
+    const token = Session.get(TOKEN_KEY)
 
     if (!token) {
         return
@@ -11,11 +12,11 @@ function appendToken(config: any) {
 }
 
 function writeToken(token: string) {
-    localStorage.setItem(TOKEN_KEY, token)
+    Session.set(TOKEN_KEY, token)
 }
 
 function removeToken() {
-    localStorage.removeItem(TOKEN_KEY)
+    Session.remove(TOKEN_KEY)
 }
 
 export { appendToken, removeToken, writeToken }

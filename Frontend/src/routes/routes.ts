@@ -43,7 +43,7 @@ const adminRoutes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: "/notes",
+        path: "/note",
         name: "notes",
         component: () => import("../pages/notes/index.vue"),
         meta: {

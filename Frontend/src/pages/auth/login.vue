@@ -61,11 +61,14 @@
 
 <script setup lang="ts">
 import { login } from "@/services/auth";
+import { useStore } from "@/stores/index";
+import { Session } from "@/utils/storage";
 import { Hide, Lock, Message, View } from "@element-plus/icons-vue";
 import type { FormInstance, FormRules } from "element-plus";
 import { ElMessage } from "element-plus";
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
+const store = useStore();
 
 const router = useRouter();
 const formRef = ref<FormInstance>();
@@ -98,7 +101,11 @@ const handleSubmit = async () => {
 				password: form.password,
 			};
 			const response = await login(request);
-			console.log("Login successful:", response);
+			Session.set("token", response.token);
+			store.setUserInfo({
+				username: response.username,
+				email: response.email,
+			});
 			ElMessage.success("Welcome back!");
 			router.push("/dashboard");
 		} catch (error) {
