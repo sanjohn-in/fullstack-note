@@ -1,18 +1,25 @@
 services:
 
-sqlserver:
-  image: mcr.microsoft.com/azure-sql-edge:latest
-  # platform: linux/arm64
-  container_name: notesapp_sqlserver
-  restart: always
-  environment:
-    ACCEPT_EULA: "1"
-    MSSQL_SA_PASSWORD: "Techbodia@2026"
-    MSSQL_PID: "Developer"
-  ports:
-    - "1433:1433"
-  volumes:
-    - sqlserver_data:/var/opt/mssql
+  sqlserver:
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    # platform: linux/arm64
+    container_name: notesapp_sqlserver
+    restart: always
+    environment:
+      ACCEPT_EULA: "1"
+      MSSQL_SA_PASSWORD: "Techbodia@2026"
+      MSSQL_PID: "Developer"
+      MSSQL_MEMORY_LIMIT_MB: "512"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Techbodia@2026 -Q 'SELECT 1' || exit 1"]
+      start_period: 60s    # ← wait 60s before first check
+      interval: 5s
+      timeout: 15s
+      retries: 7          # ← more retries
  
   backend:
     build: ./Backend
