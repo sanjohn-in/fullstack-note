@@ -2,13 +2,14 @@ services:
 
   sqlserver:
     image: mcr.microsoft.com/azure-sql-edge:latest
-    platform: linux/arm64
+    # platform: linux/arm64
     container_name: notesapp_sqlserver
     restart: always
     environment:
       ACCEPT_EULA: "1"
       MSSQL_SA_PASSWORD: "Techbodia@2026"
       MSSQL_PID: "Developer"
+      MSSQL_MEMORY_LIMIT_MB: "512"
     ports:
       - "1433:1433"
     volumes:
