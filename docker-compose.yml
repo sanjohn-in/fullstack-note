@@ -27,7 +27,7 @@ services:
       - "5174:8080"
     depends_on:
       sqlserver:
-        condition: service_healthy
+        condition: service_started
     environment:
       - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=techbodia;User Id=sa;Password=Techbodia@2026;TrustServerCertificate=True;
       - Jwt__Key=THIS_IS_A_SUPER_SECRET_KEY_12345
