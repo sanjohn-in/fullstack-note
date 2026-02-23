@@ -9,10 +9,6 @@ import { defineConfig, loadEnv, type ConfigEnv } from "vite";
 // https://vite.dev/config/
 const viteConfig = defineConfig((mode: ConfigEnv) => {
   const env = loadEnv(mode.mode, process.cwd());
-  let isProduction = false;
-  if (mode.mode === 'server') {
-    isProduction = true;
-  }
   return {
     plugins:
       [
