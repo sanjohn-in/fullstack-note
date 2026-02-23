@@ -27,4 +27,6 @@ dist-ssr
 auto-imports.d.ts
 components.d.ts
 package-lock.json
+.env.production
+.env.development
 
