@@ -3,7 +3,7 @@ import axios, { type AxiosInstance } from 'axios';
 import { ElMessage, ElMessageBox } from 'element-plus';
 // Configure a new axios instance
 const baseURL = import.meta.env.PROD
-  ? import.meta.env.VITE_API_PROD   
+  ? import.meta.env.VITE_API_PROD
   : '/api'
 const service: AxiosInstance = axios.create({
   baseURL: baseURL,
@@ -61,8 +61,8 @@ service.interceptors.response.use(
     } else if (error.message == 'Network Error') {
       ElMessage.error('Network connection error');
     } else {
-      if (error.response.data) ElMessage.error(error.response.statusText);
-      else ElMessage.error('Interface path not found');
+      // if (error.response.data) ElMessage.error(error.response.statusText);
+      // else ElMessage.error('Interface path not found');
     }
     return Promise.reject(error);
   }
