@@ -94,6 +94,7 @@ const resetFields = () => {
 const openDialog = async (type: string, row: object) => {
 	state.dialog.type = type;
 	state.dialog.isShowDialog = true;
+	console.log(row);
 };
 const submitProcess = async () => {
 	await formRef.value?.validate(async (valid) => {

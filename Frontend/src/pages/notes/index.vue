@@ -45,7 +45,6 @@
 					:width="item.width"
 					:show-overflow-tooltip="true"
 					:resizable="true"
-					:class="item.colWidth"
 				>
 					<template #default="scope">
 						<el-tag
@@ -190,7 +189,7 @@ const getTableData = async () => {
 	}
 };
 const deleteRow = async (row: Object) => {
-	// const response = await api.deleteCategory(row);
+	console.log("Deleting row:", row);
 	try {
 		getTableData();
 	} catch (e) {
