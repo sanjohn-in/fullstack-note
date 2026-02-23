@@ -2,9 +2,11 @@ import { Session } from '@/utils/storage';
 import axios, { type AxiosInstance } from 'axios';
 import { ElMessage, ElMessageBox } from 'element-plus';
 // Configure a new axios instance
-// const baseURL = import.meta.env.MODE === 'development' ? import.meta.env.VITE_API_LOCAL : import.meta.env.VITE_API_PROD;
+const baseURL = import.meta.env.PROD
+  ? import.meta.env.VITE_API_PROD   
+  : '/api'
 const service: AxiosInstance = axios.create({
-  baseURL: '/api',
+  baseURL: baseURL,
   timeout: 50000,
   headers: { 'Content-Type': 'application/json' },
 

@@ -37,7 +37,7 @@ const viteConfig = defineConfig((mode: ConfigEnv) => {
       hmr: true,
       proxy: {
         "/api": {
-          target: isProduction ? env.VITE_API_PROD : env.VITE_API_LOCAL,
+          target: env.VITE_API_LOCAL,
           ws: true,
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ""),
