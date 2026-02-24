@@ -108,7 +108,7 @@ const handleSubmit = async () => {
 				id: response.id,
 			});
 			ElMessage.success("Welcome back!");
-			router.push("/dashboard");
+			router.push("/note");
 		} catch (error) {
 			ElMessage.error("Invalid email or password");
 		} finally {

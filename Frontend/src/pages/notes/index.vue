@@ -112,7 +112,6 @@
 </template>
 <script lang="ts" setup>
 import { deleteNote, getNote, getNotes } from "@/services/note";
-import { useStore } from "@/stores";
 import dayjs from "dayjs";
 import { ElMessageBox } from "element-plus";
 import { defineAsyncComponent, onMounted, reactive, ref } from "vue";

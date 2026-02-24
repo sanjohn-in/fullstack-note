@@ -161,7 +161,7 @@ const handleSubmit = async () => {
 				id: response.id,
 			});
 			ElMessage.success("Account created! Please sign in.");
-			router.push("/dashboard");
+			router.push("/note");
 		} catch {
 			ElMessage.error("Registration failed. Try again.");
 		} finally {
