@@ -37,7 +37,7 @@
 
 			<template #footer>
 				<div class="dialog-footer">
-					<el-button type="primary" @click="submitProcess">
+					<el-button type="primary" :loading="state.loading" @click="submitProcess">
 						<div class="flex items-center gap-2">
 							<el-icon>
 								<Check />
@@ -111,7 +111,7 @@ const submitProcess = async () => {
 				content: state.form.content,
 			};
 			const response = state.form.id
-				? await updateNote(request)
+				? await updateNote(state.form.id, request)
 				: await createNote(request);
 			state.dialog.isShowDialog = false;
 			resetFields();
