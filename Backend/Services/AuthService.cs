@@ -37,7 +37,8 @@ namespace Backend.Services
             {
                 Token = _jwtHelper.GenerateToken(user),
                 Username = user.Username,
-                Email = user.Email
+                Email = user.Email,
+                Id = user.Id
             };
         }
 
@@ -53,7 +54,8 @@ namespace Backend.Services
             {
                 Token = _jwtHelper.GenerateToken(user),
                 Username = user.Username,
-                Email = user.Email
+                Email = user.Email,
+                Id = user.Id
             };
         }
     }

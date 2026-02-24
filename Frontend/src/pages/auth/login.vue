@@ -105,6 +105,7 @@ const handleSubmit = async () => {
 			store.setUserInfo({
 				username: response.username,
 				email: response.email,
+				id: response.id,
 			});
 			ElMessage.success("Welcome back!");
 			router.push("/dashboard");

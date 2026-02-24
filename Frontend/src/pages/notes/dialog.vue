@@ -52,6 +52,7 @@
 </template>
 <script setup lang="ts">
 import { createNote, updateNote } from "@/services/note";
+import { useStore } from "@/stores";
 import { Check } from "@element-plus/icons-vue";
 import type { FormInstance, FormRules } from "element-plus";
 import { ElMessage } from "element-plus";
@@ -73,7 +74,7 @@ const state = reactive({
 	loading: false,
 });
 const formRef = ref<FormInstance>();
-
+const store = useStore();
 const rules: FormRules = {
 	title: [
 		{ required: true, message: "Title is required", trigger: "blur" },
@@ -111,8 +112,8 @@ const submitProcess = async () => {
 				content: state.form.content,
 			};
 			const response = state.form.id
-				? await updateNote(state.form.id, request)
-				: await createNote(request);
+				? await updateNote(store.userInfo.id, state.form.id, request)
+				: await createNote(store.userInfo.id, request);
 			state.dialog.isShowDialog = false;
 			resetFields();
 			ElMessage.success("Note saved successfully");
