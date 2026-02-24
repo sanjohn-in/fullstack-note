@@ -85,6 +85,9 @@
 </template>
 
 <script setup lang="ts">
+import { register } from "@/services/auth";
+import { useStore } from "@/stores";
+import { Session } from "@/utils/storage";
 import { Hide, Lock, Message, User, View } from "@element-plus/icons-vue";
 import type { FormInstance, FormRules } from "element-plus";
 import { ElMessage } from "element-plus";
@@ -103,7 +106,7 @@ const form = reactive({
 	password: "",
 	confirmPassword: "",
 });
-
+const store = useStore();
 const validateConfirm = (
 	_: unknown,
 	value: string,
@@ -145,9 +148,20 @@ const handleSubmit = async () => {
 		loading.value = true;
 		try {
 			// TODO: await authStore.register(form.username, form.email, form.password)
-			await new Promise((r) => setTimeout(r, 1000));
+			const request = {
+				username: form.username,
+				email: form.email,
+				password: form.password,
+			};
+			const response = await register(request);
+			Session.set("token", response.token);
+			store.setUserInfo({
+				username: response.username,
+				email: response.email,
+				id: response.id,
+			});
 			ElMessage.success("Account created! Please sign in.");
-			router.push("/login");
+			router.push("/dashboard");
 		} catch {
 			ElMessage.error("Registration failed. Try again.");
 		} finally {

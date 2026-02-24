@@ -14,7 +14,8 @@
 
 			<el-dropdown>
 				<span class="user">
-					Admin <el-icon><ArrowDown /></el-icon>
+					{{ store.userInfo?.username.toUpperCase() }}
+					<el-icon><ArrowDown /></el-icon>
 				</span>
 				<template #dropdown>
 					<el-dropdown-menu>
@@ -30,13 +31,14 @@
 </template>
 
 <script setup lang="ts">
+import { useStore } from "@/stores";
 import { Session } from "@/utils/storage";
 import { ArrowDown, Menu } from "@element-plus/icons-vue";
 import { ref } from "vue";
 
 defineProps<{ collapsed: boolean }>();
 defineEmits(["update:collapsed"]);
-
+const store = useStore();
 const dark = ref(false);
 
 const toggleTheme = () => {
