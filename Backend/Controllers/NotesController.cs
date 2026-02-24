@@ -2,67 +2,95 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Backend.DTOs.Notes;
 using Backend.Services;
+using System.Security.Claims;
 
 namespace Backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-
+    [Authorize]
     public class NotesController : ControllerBase
     {
         private readonly INotesService _notesService;
+        private readonly ILogger<NotesController> _logger;
 
-        public NotesController(INotesService notesService)
+        public NotesController(INotesService notesService, ILogger<NotesController> logger)
         {
             _notesService = notesService;
+            _logger = logger;
         }
 
-        // GET api/notes/{userId}?page=1&pageSize=10
-        [HttpGet("{userId}")]
+        // Helper to get the current user's ID from JWT claims
+        private int GetUserId()
+        {
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(id))
+                throw new UnauthorizedAccessException("User not authenticated");
+            return int.Parse(id);
+        }
+        // GET api/notes
+        [HttpGet]
         public async Task<IActionResult> GetAll(
-            int userId,
             [FromQuery] string? search,
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10)
+
         {
-            var result = await _notesService.GetAllAsync(userId, search, page, pageSize);
+            var result = await _notesService.GetAllAsync(GetUserId(), search, page, pageSize);
             return Ok(result);
         }
 
-        // GET api/notes/{userId}/{id}
-        [HttpGet("{userId}/{id}")]
-        public async Task<IActionResult> GetById(int userId, int id)
+        // GET api/notes/5
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
         {
-            var note = await _notesService.GetByIdAsync(id, userId);
-            return Ok(note);
+            try
+            {
+                var note = await _notesService.GetByIdAsync(id, GetUserId());
+                return Ok(note);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
 
-        // POST api/notes/{userId}
-        [HttpPost("{userId}")]
-        public async Task<IActionResult> Create(int userId, [FromBody] CreateNoteDto dto)
+        // POST api/notes
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreateNoteDto dto)
         {
-            var note = await _notesService.CreateAsync(dto, userId);
-            return CreatedAtAction(nameof(GetById),
-                new { userId = userId, id = note.Id }, note);
+            var note = await _notesService.CreateAsync(dto, GetUserId());
+            return CreatedAtAction(nameof(GetById), new { id = note.Id }, note);
         }
 
-        // PUT api/notes/{userId}/{id}
-        [HttpPut("{userId}/{id}")]
-        public async Task<IActionResult> Update(
-            int userId,
-            int id,
-            [FromBody] UpdateNoteDto dto)
+        // PUT api/notes/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateNoteDto dto)
         {
-            var note = await _notesService.UpdateAsync(id, dto, userId);
-            return Ok(note);
+            try
+            {
+                var note = await _notesService.UpdateAsync(id, dto, GetUserId());
+                return Ok(note);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
 
-        // DELETE api/notes/{userId}/{id}
-        [HttpDelete("{userId}/{id}")]
-        public async Task<IActionResult> Delete(int userId, int id)
+        // DELETE api/notes/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
         {
-            await _notesService.DeleteAsync(id, userId);
-            return NoContent();
+            try
+            {
+                await _notesService.DeleteAsync(id, GetUserId());
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
     }
 }

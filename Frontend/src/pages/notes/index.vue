@@ -119,7 +119,6 @@ import { defineAsyncComponent, onMounted, reactive, ref } from "vue";
 
 const View = defineAsyncComponent(() => import("./view.vue"));
 const Dialog = defineAsyncComponent(() => import("./dialog.vue"));
-const store = useStore();
 const state = reactive({
 	// Header content (required, pay attention to the format)
 	tableData: {
@@ -176,7 +175,7 @@ const openDialogRef = ref();
 const getTableData = async () => {
 	state.tableData.config.loading = true;
 	try {
-		const response = await getNotes(store.userInfo.id, state.tableData.page);
+		const response = await getNotes(state.tableData.page);
 		const data = response.data ?? [];
 		state.tableData.data = data.map((item: EmptyObjectType) => {
 			return {
@@ -195,7 +194,7 @@ const getTableData = async () => {
 const openViewRef = ref();
 const onSystem = async (row: Record<string, number>, key: string) => {
 	if (key === "view") {
-		const res = await getNote(store.userInfo.id, Number(row?.id));
+		const res = await getNote(Number(row?.id));
 		openViewRef.value?.openDialog(res);
 	} else if (key === "edit") {
 		openDialogRef.value?.openDialog(key, row);
@@ -220,7 +219,7 @@ const onRowDel = (row: EmptyObjectType) => {
 		type: "warning",
 	})
 		.then(async () => {
-			await deleteNote(store.userInfo.id, row.id);
+			await deleteNote(row.id);
 			getTableData();
 		})
 		.catch(() => {});
